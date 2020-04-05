@@ -1,0 +1,50 @@
+<div class="row">
+  <div class="col-lg-6 left-side block">
+    <mat-card class="criteria-card">
+      <form [formGroup]="criteriaForm">
+        <h2>Criteria</h2>
+        <div class="block-inline">
+          <p>Amount: {{amountCriteria}}</p>
+          <mat-slider
+            formControlName="amountCriteria"
+            [max]="10"
+            [min]="0"
+            [step]="1"
+            [(ngModel)]="amountCriteria">
+          </mat-slider>
+          <button mat-icon-button (click)="generateCriteria()"><i class="fas fa-sync-alt"></i></button>
+        </div>
+      </form>
+      <div class="btn-group">
+        <button mat-stroked-button (click)="getAll()">All</button>
+        <button mat-stroked-button [disabled]="!alternatives" (click)="getBestAndWorth()">Best & Worst</button>
+        <button mat-stroked-button [disabled]="!selectedAlternative.hasValue()" (click)="getBetter()">Better</button>
+        <button mat-stroked-button [disabled]="!selectedAlternative.hasValue()" (click)="getWorse()">Worst</button>
+        <button mat-stroked-button [disabled]="!selectedAlternative.hasValue()" (click)="getNotComparable()">Not comparable</button>
+      </div>
+    </mat-card>
+    <ng-template appCriterion></ng-template>
+  </div>
+  <div class="col-lg-6 right-side block">
+    <mat-card>
+      <h2>Alternatives:</h2>
+      <p *ngIf="alternatives">Amount: {{alternatives.length}}</p>
+      <table mat-table #table [dataSource]="alternatives" style="width: 100%;">
+        <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
+          <mat-header-cell *matHeaderCellDef>{{disCol}}</mat-header-cell>
+          <mat-cell *matCellDef="let element "> {{element.alternativeValues[colIndex].value.name}}
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"
+                 (click)="selectedAlternative.toggle(row)"
+                 [class.selected]="selectedAlternative.isSelected(row)"
+                 [class.the-best]="row.status === status.THE_BEST"
+                 [class.the-worst]="row.status === status.THE_WORST"
+                 [class.better]="row.status === status.BETTER"
+                 [class.worse]="row.status === status.WORSE"
+                 [class.not-comparable]="row.status === status.NOT_COMPARABLE"></mat-row>
+      </table>
+    </mat-card>
+  </div>
+</div>
