@@ -1,45 +1,52 @@
 import {Component, ComponentFactoryResolver, ComponentRef, OnInit, ViewChild} from '@angular/core';
 import {FormBuilder, FormGroup} from '@angular/forms';
-import {CriterionDirective} from './criterion.directive';
-import {CriterionComponent} from './criterion/criterion.component';
-import {CriterionModel} from './criterion/criterionModel';
-import {AlternativeModel, AlternativeStatus} from './alternative.model';
-import {AlternativeService} from './alternative.service';
+import {CriterionComponent} from '../lab-i/criterion/criterion.component';
+import {CriterionModel} from '../lab-i/criterion/criterionModel';
+import {CriterionDirective} from '../lab-i/criterion.directive';
+import {AlternativeModel, AlternativeStatus} from '../lab-i/alternative.model';
 import {MatTable} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
+import {AlternativeService} from '../lab-i/alternative.service';
+import {ClassificationTableIIModel} from './classification-table-i-i/classification-table-i-i.model';
+import {ClassificationService} from './classification.service';
 
 @Component({
-  selector: 'app-lab-i',
-  templateUrl: './lab-i.component.html',
-  styleUrls: ['./lab-i.component.sass']
+  selector: 'app-lab-ii',
+  templateUrl: './lab-i-i.component.html',
+  styleUrls: ['./lab-i-i.component.sass']
 })
-export class LabIComponent implements OnInit {
+export class LabIIComponent implements OnInit {
 
   readonly status = AlternativeStatus;
   amountCriteria = 1;
   criteriaForm: FormGroup;
   @ViewChild(CriterionDirective, {static: true}) criterionContainer: CriterionDirective;
   criterionComponentRefs: ComponentRef<CriterionComponent>[] = [];
-  criteria: CriterionModel[];
+  // TODO: remove initialize
+  criteria: CriterionModel[] = [
+    CriterionModel.Create('Ціна', 'Низька', 'Висока'),
+    CriterionModel.Create('Якість виготовлення', 'Висока', 'Низька'),
+    CriterionModel.Create('Час виготовлення', 'Швидко', 'Довго'),
+    CriterionModel.Create('Складність', 'Не складно', 'Складно'),
+    CriterionModel.Create('Зацікавленність', 'Музика', 'Наука', 'Загальне')
+  ];
   alternatives: AlternativeModel[];
   @ViewChild(MatTable) table: MatTable<any>;
   displayedColumns: string[] = [];
   selectedAlternative = new SelectionModel<AlternativeModel>(false, []);
+  // TODO: remove initialize
+  answers: number[] = [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2];
+  classifyTables: ClassificationTableIIModel[] = null;
 
   constructor(private formBuilder: FormBuilder,
               private factory: ComponentFactoryResolver,
-              private alternativeService: AlternativeService) {
+              private alternativeService: AlternativeService,
+              private classService: ClassificationService) {
     this.initCriteriaForm();
   }
 
   ngOnInit(): void {
     this.selectedAlternative.changed.subscribe(val => this.alternatives.forEach(alt => {
-      switch (alt.status) {
-        case AlternativeStatus.BETTER:
-        case AlternativeStatus.WORSE:
-        case AlternativeStatus.NOT_COMPARABLE:
-          alt.status = AlternativeStatus.USUAL;
-      }
     }));
   }
 
@@ -95,39 +102,15 @@ export class LabIComponent implements OnInit {
     });
   }
 
-  getBestAndWorth() {
-    this.alternativeService.getBestAndWorse(this.alternatives).subscribe(data => {
-      this.alternatives.find(alt => alt.id === data[0].id).status = AlternativeStatus.THE_BEST;
-      this.alternatives.find(alt => alt.id === data[1].id).status = AlternativeStatus.THE_WORST;
-    });
+  getAnswers(answers: number[]) {
+    this.answers = answers;
   }
 
-  getBetter() {
-    this.alternativeService.getBetter(this.alternatives, this.selectedAlternative.selected[0]).subscribe(data => {
-      if (data.length === 0) {
-        return;
-      }
-      data.forEach(d => this.alternatives.find(alt => alt.id === d.id).status = AlternativeStatus.BETTER);
+  classify() {
+    const criteria = this.criteriaToString();
+    const answers = this.answers;
+    this.classService.classify(criteria, answers).subscribe(data => {
+      this.classifyTables = data;
     });
   }
-
-  getWorse() {
-    this.alternativeService.getWorse(this.alternatives, this.selectedAlternative.selected[0]).subscribe(data => {
-      if (data.length === 0) {
-        return;
-      }
-      data.forEach(d => this.alternatives.find(alt => alt.id === d.id).status = AlternativeStatus.WORSE);
-    });
-  }
-
-  getNotComparable() {
-    this.alternativeService.getNotComparable(this.alternatives, this.selectedAlternative.selected[0]).subscribe(data => {
-      if (data.length === 0) {
-        return;
-      }
-      data.forEach(d => this.alternatives.find(alt => alt.id === d.id).status = AlternativeStatus.NOT_COMPARABLE);
-    });
-  }
-
 }
-

@@ -18,5 +18,5 @@ export enum AlternativeStatus {
   THE_WORST,
   BETTER,
   WORSE,
-  NOT_COMPARABLE
+  NOT_COMPARABLE,
 }

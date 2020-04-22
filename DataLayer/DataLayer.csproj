@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
-        <OutputType>Exe</OutputType>
+        <RootNamespace>LAB2</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

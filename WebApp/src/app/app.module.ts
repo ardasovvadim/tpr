@@ -21,6 +21,11 @@ import {ApiService} from './modules/core/services/api.service';
 import {MatTableModule} from '@angular/material/table';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {AccessInterceptor} from './modules/core/interseprors/access.interceptor';
+import {LabIIComponent} from './modules/pages/lab-ii/lab-i-i.component';
+import { AnswersSequenceComponent } from './modules/pages/lab-ii/answers-sequence/answers-sequence.component';
+import {MatTabsModule} from '@angular/material/tabs';
+import { ClassificationTableIIComponent } from './modules/pages/lab-ii/classification-table-i-i/classification-table-i-i.component';
+import {ClassificationService} from './modules/pages/lab-ii/classification.service';
 
 @NgModule({
   declarations: [
@@ -30,26 +35,31 @@ import {AccessInterceptor} from './modules/core/interseprors/access.interceptor'
     FooterComponent,
     CriterionComponent,
     CriterionComponent,
-    CriterionDirective
+    CriterionDirective,
+    LabIIComponent,
+    AnswersSequenceComponent,
+    ClassificationTableIIComponent
   ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    RouterModule,
-    MatButtonModule,
-    AppRoutingModule,
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatCardModule,
-    MatSliderModule,
-    FormsModule,
-    MatTableModule,
-    HttpClientModule,
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        RouterModule,
+        MatButtonModule,
+        AppRoutingModule,
+        ReactiveFormsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatCardModule,
+        MatSliderModule,
+        FormsModule,
+        MatTableModule,
+        HttpClientModule,
+        MatTabsModule,
+    ],
   providers: [
     ApiService,
     AlternativeService,
+    ClassificationService,
     {provide: HTTP_INTERCEPTORS, useClass: AccessInterceptor, multi: true}
   ],
   bootstrap: [AppComponent]

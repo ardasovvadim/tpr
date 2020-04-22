@@ -1,0 +1,68 @@
+<mat-card>
+  <h2>Classify table:</h2>
+  <p>Iteration: {{classificationTable.iteration}} </p>
+  <p>Center first class: ( x = {{classificationTable.centerClass1[0]}}; y = {{classificationTable.centerClass1[1]}} )</p>
+  <p>Center second class: ( x = {{classificationTable.centerClass2[0]}}; y = {{classificationTable.centerClass2[1]}} )</p>
+  <table mat-table #table [dataSource]="classificationTable.rows" style="width: 100%;">
+    <!--  Criteria  -->
+    <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
+      <mat-header-cell *matHeaderCellDef>{{disCol}}</mat-header-cell>
+      <mat-cell *matCellDef="let element "> {{element.alternative.alternativeValues[colIndex].value.name}}
+      </mat-cell>
+    </ng-container>
+    <!--  G  -->
+    <ng-container matColumnDef="g">
+      <mat-header-cell *matHeaderCellDef>G</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.g}}</mat-cell>
+    </ng-container>
+    <!--  D1  -->
+    <ng-container matColumnDef="d1">
+      <mat-header-cell *matHeaderCellDef>D1</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.d1}}</mat-cell>
+    </ng-container>
+    <!--  D2  -->
+    <ng-container matColumnDef="d2">
+      <mat-header-cell *matHeaderCellDef>D2</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.d2}}</mat-cell>
+    </ng-container>
+    <!--  P1  -->
+    <ng-container matColumnDef="p1">
+      <mat-header-cell *matHeaderCellDef>P1</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.p1}}</mat-cell>
+    </ng-container>
+    <!--  P2  -->
+    <ng-container matColumnDef="p2">
+      <mat-header-cell *matHeaderCellDef>P2</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.p2}}</mat-cell>
+    </ng-container>
+    <!--  G1  -->
+    <ng-container matColumnDef="g1">
+      <mat-header-cell *matHeaderCellDef>G1</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.g1}}</mat-cell>
+    </ng-container>
+    <!--  G2  -->
+    <ng-container matColumnDef="g2">
+      <mat-header-cell *matHeaderCellDef>G2</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.g2}}</mat-cell>
+    </ng-container>
+    <!--  F1  -->
+    <ng-container matColumnDef="f1">
+      <mat-header-cell *matHeaderCellDef>F1</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.f1}}</mat-cell>
+    </ng-container>
+    <!--  F2  -->
+    <ng-container matColumnDef="f2">
+      <mat-header-cell *matHeaderCellDef>F2</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.f2}}</mat-cell>
+    </ng-container>
+    <!--  F  -->
+    <ng-container matColumnDef="f">
+      <mat-header-cell *matHeaderCellDef>F</mat-header-cell>
+      <mat-cell *matCellDef="let element"> {{element.f}}</mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: columns;"
+             [class.first-class]="row.status === status.FIRST_CLASS"
+             [class.second-class]="row.status === status.SECOND_CLASS"></mat-row>
+  </table>
+</mat-card>

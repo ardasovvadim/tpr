@@ -1,0 +1,27 @@
+<mat-card>
+  <form [formGroup]="form" (change)="onChange()">
+    <h2>Answer options of the decision maker:</h2>
+    <div class="block-inline">
+      <p>Amount: {{this.controls.amount.value}}</p>
+      <mat-slider
+        formControlName="amount"
+        [max]="20"
+        [min]="1"
+        [step]="1">
+      </mat-slider>
+      <button mat-icon-button (click)="generateAnswers()"><i class="fas fa-sync-alt"></i></button>
+    </div>
+    <div class="values" *ngIf="isGenerated">
+      <h3>Answers: </h3>
+      <div class="block-inline">
+        <div class="value" *ngFor="let item of answersControl.controls; let i = index">
+          <mat-form-field appearance="legacy" formArrayName="answers">
+            <mat-label>Answer {{i + 1}}</mat-label>
+            <input matInput [formControlName]="i" placeholder="Answer">
+          </mat-form-field>
+          <span *ngIf="answersControl.controls.length != i+1" class="breaker"><i class="fas fa-arrow-right"></i></span>
+        </div>
+      </div>
+    </div>
+  </form>
+</mat-card>

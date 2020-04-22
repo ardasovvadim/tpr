@@ -1,19 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using LAB2.Extensions;
 
 namespace LAB2
 {
     public class ClassificationTable2
     {
-        private List<Row> Rows { get; set; }
-        private int _iteration = 0;
-        private List<double> CenterClass1 { get; set; }
-        private List<double> CenterClass2 { get; set; }
+        public List<Row> Rows { get; set; }
+        public int Iteration = 0;
+        public List<double> CenterClass1 { get; set; }
+        public List<double> CenterClass2 { get; set; }
 
-        private class Row
+        public class Row
         {
             public Alternative Alternative { get; set; }
             public int G { get; set; }
@@ -30,6 +29,10 @@ namespace LAB2
             public Row(Alternative alternative)
             {
                 Alternative = alternative;
+            }
+
+            public Row()
+            {
             }
 
             public override string ToString()
@@ -58,11 +61,15 @@ namespace LAB2
             });
         }
 
+        public ClassificationTable2()
+        {
+        }
+
         public ClassificationTable2 NextStep(int _class)
         {
             RecountCenter(1, CenterClass1);
             RecountCenter(2, CenterClass2);
-            Console.WriteLine($"Iteration {_iteration}");
+            Console.WriteLine($"Iteration {Iteration}");
             Console.WriteLine($"Center1: {CenterClass1[0]}:{CenterClass1[1]} \t Center2: {CenterClass2[0]}:{CenterClass2[1]}");
             Rows.ForEach(r =>
             {
@@ -112,7 +119,7 @@ namespace LAB2
 
             alternatives.ForEach(alt => Rows.Find(r => r.Alternative == alt).G = _class);
 
-            ++_iteration;
+            ++Iteration;
 
             return this;
         }

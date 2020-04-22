@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using LAB2;
 
-namespace LAB2
+namespace ConsoleApp
 {
-    public static class Program
+    public class LabII : ILab
     {
-        public static void Main(string[] args)
+        public void Run()
         {
             var criteria = new List<Criterion>
             {
-                new Criterion("k1", "k1_1", "k1_2"),
-                new Criterion("k2", "k2_1", "k2_2"),
-                new Criterion("k3", "k3_1", "k3_2"),
-                new Criterion("k4", "k4_1", "k4_2"),
-                new Criterion("k5", "k5_1", "k5_2", "k5_3")
+                new Criterion("аромат", "банан", "ананас", "яблука"),
+                new Criterion("колір", "синій", "білий", "чорний"),
             };
-            var answers = new List<int> { 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 };
+            var answers = new List<int> { 1, 2};
             var table = new ClassificationTable2(criteria);
             {
                 int i = 0;
@@ -27,11 +25,6 @@ namespace LAB2
                     ++i;
                 }
             }
-        }
-        
-        public static void Print(this List<Alternative> alternatives)
-        {
-            alternatives.ForEach(alt => Console.WriteLine(alt.ToString()));
         }
     }
 }

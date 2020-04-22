@@ -1,0 +1,58 @@
+<mat-tab-group dynamicHeight="true">
+  <mat-tab label="Input">
+    <div class="row">
+      <div class="col-lg-6 left-side block">
+        <mat-card class="criteria-card">
+          <form [formGroup]="criteriaForm">
+            <h2>Criteria</h2>
+            <div class="block-inline">
+              <p>Amount: {{amountCriteria}}</p>
+              <mat-slider
+                formControlName="amountCriteria"
+                [max]="10"
+                [min]="0"
+                [step]="1"
+                [(ngModel)]="amountCriteria">
+              </mat-slider>
+              <button mat-icon-button (click)="generateCriteria()"><i class="fas fa-sync-alt"></i></button>
+            </div>
+          </form>
+          <div class="btn-group">
+            <button mat-stroked-button (click)="getAll()">Get all</button>
+            <button mat-stroked-button (click)="classify()">Classify</button>
+          </div>
+        </mat-card>
+        <ng-template appCriterion></ng-template>
+      </div>
+      <div class="col-lg-6 right-side block">
+        <app-answers-sequence (answersEvent)="getAnswers($event)"></app-answers-sequence>
+        <mat-card>
+          <h2>Alternatives:</h2>
+          <p *ngIf="alternatives">Amount: {{alternatives.length}}</p>
+          <table mat-table #table [dataSource]="alternatives" style="width: 100%;">
+            <ng-container *ngFor="let disCol of displayedColumns; let colIndex = index" matColumnDef="{{disCol}}">
+              <mat-header-cell *matHeaderCellDef>{{disCol}}</mat-header-cell>
+              <mat-cell *matCellDef="let element "> {{element.alternativeValues[colIndex].value.name}}
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"
+                     (click)="selectedAlternative.toggle(row)"></mat-row>
+          </table>
+        </mat-card>
+      </div>
+    </div>
+
+  </mat-tab>
+  <mat-tab label="Output" [disabled]="!classifyTables">
+    <div class="row">
+      <div class="col-12">
+        <app-classification-table-i-i
+          *ngFor="let t of classifyTables"
+          [classificationTable]="t">
+        </app-classification-table-i-i>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+
