@@ -10,10 +10,13 @@ namespace ConsoleApp
         {
             var criteria = new List<Criterion>
             {
-                new Criterion("аромат", "банан", "ананас", "яблука"),
-                new Criterion("колір", "синій", "білий", "чорний"),
+                new Criterion("K1", "C#", "Java"),
+                new Criterion("K2", "SQL Server", "MySql"),
+                new Criterion("K3", "Angular", "React JS"),
+                new Criterion("K4", "WEB API", "MVC"),
+                new Criterion("K5", "Docker", "Jenkins", "Kubernetes")
             };
-            var answers = new List<int> { 1, 2};
+            var answers = new List<int> {1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2};
             var table = new ClassificationTable2(criteria);
             {
                 int i = 0;

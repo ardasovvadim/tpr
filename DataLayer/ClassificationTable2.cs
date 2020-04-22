@@ -25,6 +25,8 @@ namespace LAB2
             public double F1 { get; set; }
             public double F2 { get; set; }
             public double F { get; set; }
+            public bool Highlight { get; set; }
+            public bool Changed { get; set; }
 
             public Row(Alternative alternative)
             {
@@ -39,7 +41,8 @@ namespace LAB2
             {
                 var result = Alternative.AlternativeValues.Select(v => v.Value.Index.ToString())
                     .Aggregate((p, n) => p + "\t" + n);
-                result += "\t" + G + "\t" + Math.Round(D1, 2) + "\t" + Math.Round(D2, 2) + "\t" + Math.Round(P1, 2) + "\t" + Math.Round(P2, 2) + "\t" + G1 + "\t" + G2 + "\t" + Math.Round(F1, 2) +
+                result += "\t" + G + "\t" + Math.Round(D1, 2) + "\t" + Math.Round(D2, 2) + "\t" + Math.Round(P1, 2) +
+                          "\t" + Math.Round(P2, 2) + "\t" + G1 + "\t" + G2 + "\t" + Math.Round(F1, 2) +
                           "\t" + Math.Round(F2, 2) + "\t" + Math.Round(F);
                 return result;
             }
@@ -70,54 +73,77 @@ namespace LAB2
             RecountCenter(1, CenterClass1);
             RecountCenter(2, CenterClass2);
             Console.WriteLine($"Iteration {Iteration}");
-            Console.WriteLine($"Center1: {CenterClass1[0]}:{CenterClass1[1]} \t Center2: {CenterClass2[0]}:{CenterClass2[1]}");
+            Console.WriteLine($"Center1: " + CenterClass1.Select(c => c.ToString()).Aggregate((p, n) => p + ":" + n));
+            Console.WriteLine($"Center2: " + CenterClass2.Select(c => c.ToString()).Aggregate((p, n) => p + ":" + n));
+
             Rows.ForEach(r =>
             {
                 r.D1 = r.Alternative.GetD(CenterClass1);
                 r.D2 = r.Alternative.GetD(CenterClass2);
-                var maxD = GetMaxD();
+            });
+
+            var maxD = GetMaxD();
+
+            Rows.ForEach(r =>
+            {
                 if (r.G != 0)
                     r.P1 = r.G == 1 ? 1 : 0;
                 else
                     r.P1 = (maxD - r.D1) / (2 * maxD - r.D1 - r.D2);
                 r.P2 = 1 - r.P1;
-                var undefined = GetUndefinedAlternatives();
+            });
+
+            var undefinedAlternatives = GetUndefinedAlternatives();
+            Rows.ForEach(r =>
+            {
                 if (r.G == 0)
                 {
-                    r.G1 = undefined.GetBetterAlternatives(r.Alternative).Count;
-                    r.G2 = undefined.GetWorseAlternatives(r.Alternative).Count;
+                    r.G1 = undefinedAlternatives.GetBetterAlternatives(r.Alternative).Count;
+                    r.G2 = undefinedAlternatives.GetWorseAlternatives(r.Alternative).Count;
                 }
                 else
                 {
                     r.G1 = 0;
                     r.G2 = 0;
                 }
-
-                r.F1 = r.P1 * r.G1;
-                r.F2 = r.P2 * r.G2;
-                r.F = r.F1 + r.F2;
-
-                // if (r.P1 == 1) r.G = 1;
-                // if (r.P1 == 0) r.G = 2;
             });
 
             Rows.ForEach(r =>
             {
-                if (r.P1 == 1 || r.P1 == 0)
+                r.F1 = r.P1 * r.G1;
+                r.F2 = r.P2 * r.G2;
+                r.F = r.F1 + r.F2;
+            });
+
+            Rows.ForEach(r =>
+            {
+                if ((r.P1 == 1 || r.P1 == 0) && r.G == 0)
                 {
                     r.G = r.P1 == 1 ? 1 : 2;
+                    r.Changed = true;
                 }
             });
 
-            var maxF = Rows.Max(r => r.F);
-            var iMaxF = Rows.FindIndex(r => Math.Abs(r.F - maxF) < 0.01);
-            Rows[iMaxF].G = _class;
-            var undefined = GetUndefinedAlternatives();
-            var alternatives = _class == 1
-                ? undefined.GetBetterAlternatives(Rows[iMaxF].Alternative)
-                : undefined.GetWorseAlternatives(Rows[iMaxF].Alternative);
+            var undefinedRows = Rows.Where(r => r.G == 0).ToList();
+            if (undefinedRows.Count > 0)
+            {
+                var maxF = undefinedRows.Max(r => r.F);
+                var rowMaxF = undefinedRows.Find(r => r.F == maxF);
+                rowMaxF.Highlight = true;
+                rowMaxF.G = _class;
+                undefinedAlternatives = GetUndefinedAlternatives();
+                var alternatives = _class == 1
+                    ? undefinedAlternatives.GetBetterAlternatives(rowMaxF.Alternative)
+                    : undefinedAlternatives.GetWorseAlternatives(rowMaxF.Alternative);
 
-            alternatives.ForEach(alt => Rows.Find(r => r.Alternative == alt).G = _class);
+                alternatives.ForEach(alt =>
+                {
+                    var foundAlt = Rows.Find(r => r.Alternative == alt);
+                    foundAlt.G = _class;
+                    foundAlt.Changed = true;
+                });
+                
+            }
 
             ++Iteration;
 
@@ -170,18 +196,32 @@ namespace LAB2
             Console.WriteLine(result);
             Rows.ForEach(r =>
             {
-                Console.ForegroundColor = r.G == 1 ? ConsoleColor.Green : ConsoleColor.Red;
                 Console.ForegroundColor = r.G switch
                 {
                     1 => ConsoleColor.Green,
                     2 => ConsoleColor.Red,
                     _ => ConsoleColor.Gray
                 };
-                Console.WriteLine(r);
+
+                if (r.Highlight)
+                {
+                    Console.ForegroundColor = ConsoleColor.Blue;
+                    r.Highlight = false;
+                }
+
+                if (r.Changed)
+                {
+                    Console.WriteLine(r + "\t << CHANGED");
+                    r.Changed = false;
+                }
+                else
+                {
+                    Console.WriteLine(r);
+                }
                 Console.ForegroundColor = ConsoleColor.Yellow;
             });
         }
-        
+
         public override string ToString()
         {
             var result = Rows[0].Alternative.AlternativeValues.Select(v => v.Key.Name)
