@@ -43,7 +43,7 @@ namespace LAB2
                     .Aggregate((p, n) => p + "\t" + n);
                 result += "\t" + G + "\t" + Math.Round(D1, 2) + "\t" + Math.Round(D2, 2) + "\t" + Math.Round(P1, 2) +
                           "\t" + Math.Round(P2, 2) + "\t" + G1 + "\t" + G2 + "\t" + Math.Round(F1, 2) +
-                          "\t" + Math.Round(F2, 2) + "\t" + Math.Round(F);
+                          "\t" + Math.Round(F2, 2) + "\t" + Math.Round(F, 2);
                 return result;
             }
         }
@@ -62,6 +62,8 @@ namespace LAB2
                 CenterClass1.Add(0);
                 CenterClass2.Add(0);
             });
+            RecountCenter(1, CenterClass1);
+            RecountCenter(2, CenterClass2);
         }
 
         public ClassificationTable2()
@@ -72,9 +74,6 @@ namespace LAB2
         {
             RecountCenter(1, CenterClass1);
             RecountCenter(2, CenterClass2);
-            Console.WriteLine($"Iteration {Iteration}");
-            Console.WriteLine($"Center1: " + CenterClass1.Select(c => c.ToString()).Aggregate((p, n) => p + ":" + n));
-            Console.WriteLine($"Center2: " + CenterClass2.Select(c => c.ToString()).Aggregate((p, n) => p + ":" + n));
 
             Rows.ForEach(r =>
             {
@@ -131,6 +130,7 @@ namespace LAB2
                 var rowMaxF = undefinedRows.Find(r => r.F == maxF);
                 rowMaxF.Highlight = true;
                 rowMaxF.G = _class;
+                rowMaxF.Changed = true;
                 undefinedAlternatives = GetUndefinedAlternatives();
                 var alternatives = _class == 1
                     ? undefinedAlternatives.GetBetterAlternatives(rowMaxF.Alternative)
@@ -142,7 +142,6 @@ namespace LAB2
                     foundAlt.G = _class;
                     foundAlt.Changed = true;
                 });
-                
             }
 
             ++Iteration;
@@ -190,6 +189,16 @@ namespace LAB2
 
         public void PrintConsole()
         {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"Iteration {Iteration}");
+            Console.WriteLine("Amount alternatives: " + Rows.Count);
+            Console.WriteLine("Amount alternatives class 1: " + Rows.Where(r => r.G == 1).ToList().Count);
+            Console.WriteLine("Amount alternatives class 2: " + Rows.Where(r => r.G == 2).ToList().Count);
+            Console.WriteLine($"Center1: " + CenterClass1.Select(c => c.ToString()).Aggregate((p, n) => p + ":" + n));
+            Console.WriteLine($"Center2: " + CenterClass2.Select(c => c.ToString()).Aggregate((p, n) => p + ":" + n));
+            Console.ForegroundColor = ConsoleColor.White;
+
+
             var result = Rows[0].Alternative.AlternativeValues.Select(v => v.Key.Name)
                 .Aggregate((p, n) => p + "\t" + n);
             result += "\tG\td1\td2\tp1\tp2\tg1\tg2\tF1\tF2\tF\n";
@@ -218,8 +227,10 @@ namespace LAB2
                 {
                     Console.WriteLine(r);
                 }
+
                 Console.ForegroundColor = ConsoleColor.Yellow;
             });
+            Console.WriteLine("\n----------------------------------------------------\n");
         }
 
         public override string ToString()

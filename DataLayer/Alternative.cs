@@ -16,9 +16,15 @@ namespace LAB2
             AlternativeValues = new List<Pair<Criterion, CriterionValue>>();
         }
 
+        public Alternative(Alternative baseAlternative)
+        {
+            Id = baseAlternative.Id;
+            AlternativeValues = baseAlternative.AlternativeValues.ToList();
+        }
+
         public override string ToString()
         {
-            return "Alternative { " + AlternativeValues.Select(v => v.Value.Name + " ").Aggregate((p, n) => p + n) +
+            return "Alternative { " + AlternativeValues.Select(v => v.Value.Name).Aggregate((p, n) => p + " " + n) +
                    "}";
         }
     }

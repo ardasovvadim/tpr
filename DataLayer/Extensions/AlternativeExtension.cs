@@ -98,6 +98,42 @@ namespace LAB2.Extensions
             }
             return result;
         }
+
+        public static Alternative GetAlternativeByVector(this List<Alternative> alternatives, List<int> vector)
+        {
+            if (alternatives.Count == 0 || vector.Count != alternatives[0].AlternativeValues.Count)
+            {
+                return null;
+            }
+            return alternatives.FirstOrDefault(alt =>
+            {
+                for (var i = 0; i < alt.AlternativeValues.Count; i++)
+                {
+                    if (alt.AlternativeValues[i].Value.Index != vector[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            });
+        }
+        
+        public static Alternative GetAlternativeByVector(this List<Alternative> alternatives, string vector)
+        {
+            var vec = new List<int>();
+            for (var i = 0; i < vector.Length; i++)
+            {
+                vec.Add(int.Parse(vector[i].ToString()));
+            }
+
+            return GetAlternativeByVector(alternatives, vec);
+        }
+
+        public static string ToVector(this Alternative alt)
+        {
+            return alt.AlternativeValues.Select(val => val.Value.Index.ToString()).Aggregate((p, n) => p + n);
+        }
         
     }
 }
