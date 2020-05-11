@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\ardas\AppData\local\JetBrains\Rider2020.1\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\ardas\AppData\local\JetBrains\Rider2020.1\resharper-host\local\Transient\ReSharperHost\v201\SolutionCaches\_TPR.-778181879.00" t="ExcludeRecursive" />
+    <e p="C:\Users\ardas\AppData\Roaming\JetBrains\Rider2020.1\consoles\db" t="IncludeRecursive" />
+    <e p="C:\Users\ardas\AppData\Roaming\JetBrains\Rider2020.1\Extensions" t="IncludeRecursive" />
+    <e p="C:\Users\ardas\AppData\Roaming\JetBrains\Rider2020.1\scratches" t="IncludeRecursive" />
+    <e p="C:\Users\ardas\Documents\EduEnv\University\3rd course II\TPR\LABS" t="IncludeFlat">
+      <e p="ConsoleApp" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="ConsoleApp.csproj" t="IncludeRecursive" />
+        <e p="Extensions.cs" t="Include" />
+        <e p="LabI.cs" t="Include" />
+        <e p="LabII.cs" t="Include" />
+        <e p="LabIII.cs" t="Include" />
+        <e p="LabIV.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="ConsoleApp.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+      </e>
+      <e p="DataLayer" t="IncludeRecursive">
+        <e p="Alternative.cs" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="ClassificationTable2.cs" t="Include" />
+        <e p="CompareMatrix.cs" t="Include" />
+        <e p="Criterion.cs" t="Include" />
+        <e p="DataLayer.csproj" t="IncludeRecursive" />
+        <e p="Extensions" t="Include">
+          <e p="AlternativeExtension.cs" t="Include" />
+          <e p="CriterionExtension.cs" t="Include" />
+        </e>
+        <e p="FindBestAlt.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="DataLayer.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+      <e p="TPR.sln" t="IncludeFlat" />
+      <e p="WebApi" t="IncludeRecursive">
+        <e p="appsettings.Development.json" t="Include" />
+        <e p="appsettings.json" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Common" t="Include">
+          <e p="Extensions.cs" t="Include" />
+        </e>
+        <e p="Controllers" t="Include">
+          <e p="AlternativeController.cs" t="Include" />
+          <e p="ClassifyController.cs" t="Include" />
+        </e>
+        <e p="Data" t="Include">
+          <e p="Request" t="Include">
+            <e p="AlternativeRequest.cs" t="Include" />
+            <e p="ClassifyRequest.cs" t="Include" />
+            <e p="CriterionReq.cs" t="Include" />
+          </e>
+          <e p="Response" t="Include">
+            <e p="AlternativeRes.cs" t="Include" />
+          </e>
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp3.1" t="Include">
+              <e p="WebApi.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="launchSettings.json" t="Include" />
+        </e>
+        <e p="Services" t="Include">
+          <e p="IAlternativeService.cs" t="Include" />
+        </e>
+        <e p="Startup.cs" t="Include" />
+        <e p="WebApi.csproj" t="IncludeRecursive" />
+      </e>
+    </e>
+  </component>
+</project>

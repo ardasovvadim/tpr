@@ -666,7 +666,7 @@ namespace LAB2
             }
 
             Console.Write("Union way vector: ");
-            Console.Write(unionVector.Aggregate((p, n) => p + " -> " + n));
+            Console.Write(unionWay.Aggregate((p, n) => p + " -> " + n));
             ;
             // for (var i = 0; i < unionWay.Count; i++)
             // {
@@ -681,24 +681,21 @@ namespace LAB2
 
         public void SortAlternatives(List<List<int>> alternativeVector)
         {
-            var vectors =
-                alternativeVector.Select(alt => alt.Select(val => val.ToString()).Aggregate((p, n) => p + n)).ToList();
-
-            var numbers = new List<List<int>>();
-            vectors.ForEach(v =>
+            var indexes = new List<List<int>>();
+            alternativeVector.ForEach(vector =>
             {
                 var number = new List<int>();
-                for (var i = 0; i < v.Length; i++)
+                for (var i = 0; i < vector.Count; i++)
                 {
-                    var index = UnionWay.FindIndex(w => w[i] == v[i]) + 1;
+                    var index = UnionWay.FindIndex(way => vector[i] == int.Parse(way[i].ToString())) + 1;
                     number.Add(index);
                 }
 
-                numbers.Add(number);
+                indexes.Add(number);
             });
 
             var sortNumbers = new List<List<int>>();
-            numbers.ForEach(number => sortNumbers.Add(number.ToList()));
+            indexes.ForEach(numbers => sortNumbers.Add(numbers.ToList()));
 
             sortNumbers.ForEach(number => number.Sort());
 
@@ -709,20 +706,21 @@ namespace LAB2
             Console.WriteLine();
             Console.WriteLine("Final:");
             Console.WriteLine();
-            for (var i = 0; i < vectors.Count; i++)
+            for (var i = 0; i < alternativeVector.Count; i++)
             {
-                var number = numbers[i].Select(n => n.ToString()).Aggregate((p, n) => p + n);
-                var sortNumber = sortNumbers[i].Select(n => n.ToString()).Aggregate((p, n) => p + n);
+                var vector = alternativeVector[i].Select(v => v.ToString()).Aggregate((p, n) => p + " " + n);
+                var number = indexes[i].Select(n => n.ToString()).Aggregate((p, n) => p + " " + n);
+                var sortNumber = sortNumbers[i].Select(n => n.ToString()).Aggregate((p, n) => p + " " + n);
 
                 if (i == indexBest)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"{i + 1}:\t{vectors[i]}\t{number}\t{sortNumber}");
+                    Console.WriteLine($"{i + 1}:\t\t{vector}\t\t{number}\t\t{sortNumber}");
                     Console.ForegroundColor = ConsoleColor.White;
                     continue;
                 }
 
-                Console.WriteLine($"{i + 1}:\t{vectors[i]}\t{number}\t{sortNumber}");
+                Console.WriteLine($"{i + 1}:\t\t{vector}\t\t{number}\t\t{sortNumber}");
             }
 
             Console.WriteLine();
