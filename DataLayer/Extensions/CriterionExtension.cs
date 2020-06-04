@@ -7,9 +7,12 @@ namespace LAB2.Extensions
     {
         public static List<Alternative> GetAllAlternatives(this List<Criterion> criteria)
         {
-            var amountAlternatives = criteria.Select(c => c.CriterionValues.Count).Aggregate((p, n) => p * n);
-            var alternatives = new List<Alternative>(amountAlternatives);
-            var amountValueArray = new List<int>(criteria.Count);
+            
+            long amountAlternatives = 1;
+            criteria.ForEach(c => amountAlternatives *= c.CriterionValues.Count);
+            long length = amountAlternatives;
+            var alternatives = new List<Alternative>();
+            var amountValueArray = new List<long>();
             for (var i = 0; i < criteria.Count; ++i)
             {
                 amountAlternatives /= criteria[i].CriterionValues.Count;
@@ -22,7 +25,7 @@ namespace LAB2.Extensions
                 iValueArray.Add(-1);
             }
 
-            for (var i = 0; i < alternatives.Capacity; ++i)
+            for (var i = 0; i < length; ++i)
             {
                 var alternative = new Alternative();
                 for (var k = 0; k < criteria.Count; k++)

@@ -16,25 +16,51 @@ namespace LAB2
         public FindBestAlt(List<Criterion> criteria, List<List<int>> alternatives, List<int> answers)
         {
             _criteria = criteria;
-            _allAlternatives = criteria.GetAllAlternatives();
+            // _allAlternatives = criteria.GetAllAlternatives();
             _answers = answers;
-            _alternativesForCompare =
-                alternatives.Select(vector => _allAlternatives.GetAlternativeByVector(vector)).ToList();
+            _alternativesForCompare = GetAltsByVector(criteria, alternatives);
             _compareResults = new List<Alternative>();
         }
 
-        public Alternative FindTheBest()
+        private List<Alternative> GetAltsByVector(List<Criterion> criteria, List<List<int>> alternatives)
         {
+            var result = new List<Alternative>();
+            alternatives.ForEach(alt =>
+            {
+                var newAlt = new Alternative();
+                var values = newAlt.AlternativeValues;
+                for (var i = 0; i < criteria.Count; i++)
+                {
+                    var crit = criteria[i];
+                    values.Add(new Pair<Criterion, CriterionValue>(crit, crit.CriterionValues[alt[i] - 1]));
+                }
+
+                result.Add(newAlt);
+            });
+            return result;
+        }
+
+        public IEnumerable<Alternative> FindTheBest()
+        {
+            _alternativesForCompare.ForEach(Console.WriteLine);
+            Console.WriteLine("\n\n");
+            
             var rankAlts = new Dictionary<Alternative, int>();
+            _alternativesForCompare.ForEach(alt => rankAlts[alt] = 0);
 
             for (var i = 0; i < _alternativesForCompare.Count - 1; i++)
             {
                 var currentAlternative1 = _alternativesForCompare[i];
                 var amountValues = currentAlternative1.AlternativeValues.Count;
-                var limitationsRanges1 = GetZeroListBySize(amountValues);
                 for (var j = i + 1; j < _alternativesForCompare.Count; j++)
                 {
                     var currentAlternative2 = _alternativesForCompare[j];
+
+                    Console.WriteLine($"---------------------------------------------------------------");
+                    Console.WriteLine($"Compare {i} alt: {currentAlternative1}");
+                    Console.WriteLine($"Compare {j} alt: {currentAlternative2}\n");
+
+                    var limitationsRanges1 = GetZeroListBySize(amountValues);
                     var limitationsRanges2 = GetZeroListBySize(amountValues);
 
                     SetLimitationsRanges(currentAlternative1, limitationsRanges1, currentAlternative2,
@@ -43,19 +69,25 @@ namespace LAB2
                     var baseAlternative = GetBaseAlternative(currentAlternative1, limitationsRanges1,
                         currentAlternative2);
 
-                    Console.WriteLine("\nBase alternative: " + baseAlternative.ToString() + "\n");
+                    Console.WriteLine("\nBase alternative: " + baseAlternative + "\n");
 
                     var currentRank1 = 1;
                     var currentRank2 = 1;
-                    var results = new List<int>();
                     var copyBaseAlt1 = new Alternative(baseAlternative);
                     var copyBaseAlt2 = new Alternative(baseAlternative);
                     var markIndexes1 = new List<int>();
                     var markIndexes2 = new List<int>();
                     var @continue = true;
+                    // 2
                     var lastRound = 0;
+                    // 1
+                    var results = new List<int>();
+                    var favorite = GetFavorite(limitationsRanges1, limitationsRanges2);
+                    Console.WriteLine($"Favorite: {favorite}\n");
                     while (@continue)
                     {
+                        // get next limitation for left side or initial value
+                        // getting worse alternative
                         if (lastRound == 0 || lastRound == 1)
                         {
                             var indexNextRank1 = limitationsRanges1.FindIndex(value => value == currentRank1);
@@ -64,6 +96,8 @@ namespace LAB2
                             markIndexes1.Add(indexNextRank1);
                         }
 
+                        // get next limitation for right side or initial value
+                        // getting worse alternative
                         if (lastRound == 0 || lastRound == 2)
                         {
                             var indexNextRank2 = limitationsRanges2.FindIndex(value => value == currentRank2);
@@ -72,22 +106,36 @@ namespace LAB2
                             markIndexes2.Add(indexNextRank2);
                         }
 
+                        // Compare alternatives
                         var chosenAlt = PrintCompareAlternatives(copyBaseAlt1, copyBaseAlt2, markIndexes1,
                             markIndexes2);
 
+                        // if left side better
                         if (chosenAlt == copyBaseAlt1)
                         {
                             var added = false;
+                            // last round get right side
                             if (lastRound == 2)
                             {
+                                switch (favorite)
+                                {
+                                    case 1:
+                                        results.Add(1);
+                                        ++currentRank1;
+                                        ++currentRank2;
+                                        break;
+                                    case 2:
+                                        results.Add(2);
+                                        currentRank1 = currentRank2;
+                                        break;
+                                }
+
                                 added = true;
-                                results.Add(2);
                                 lastRound = 0;
                                 copyBaseAlt1 = new Alternative(baseAlternative);
                                 copyBaseAlt2 = new Alternative(baseAlternative);
                                 markIndexes1.Clear();
                                 markIndexes2.Clear();
-                                currentRank1 = currentRank2;
                             }
                             else
                             {
@@ -96,11 +144,21 @@ namespace LAB2
                             }
 
 
-                            if (!limitationsRanges1.Contains(currentRank1))
+                            if (!limitationsRanges1.Contains(currentRank1) ||
+                                !limitationsRanges2.Contains(currentRank2))
                             {
                                 if (!added)
                                 {
-                                    results.Add(1);
+                                    // results.Add(1);
+                                    switch (favorite)
+                                    {
+                                        case 1:
+                                            results.Add(1);
+                                            break;
+                                        case 2:
+                                            results.Clear();
+                                            break;
+                                    }
                                 }
 
                                 @continue = false;
@@ -112,13 +170,24 @@ namespace LAB2
                             if (lastRound == 1)
                             {
                                 added = true;
-                                results.Add(1);
                                 lastRound = 0;
                                 copyBaseAlt1 = new Alternative(baseAlternative);
                                 copyBaseAlt2 = new Alternative(baseAlternative);
                                 markIndexes1.Clear();
                                 markIndexes2.Clear();
-                                currentRank2 = currentRank1;
+
+                                switch (favorite)
+                                {
+                                    case 1:
+                                        results.Add(1);
+                                        currentRank2 = currentRank1;
+                                        break;
+                                    case 2:
+                                        results.Add(2);
+                                        ++currentRank1;
+                                        ++currentRank2;
+                                        break;
+                                }
                             }
                             else
                             {
@@ -127,11 +196,21 @@ namespace LAB2
                             }
 
 
-                            if (!limitationsRanges2.Contains(currentRank2))
+                            if (!limitationsRanges2.Contains(currentRank2) ||
+                                !limitationsRanges2.Contains(currentRank2))
                             {
                                 if (!added)
                                 {
-                                    results.Add(1);
+                                    // results.Add(2);
+                                    switch (favorite)
+                                    {
+                                        case 1:
+                                            results.Clear();
+                                            break;
+                                        case 2:
+                                            results.Add(2);
+                                            break;
+                                    }
                                 }
 
                                 @continue = false;
@@ -145,15 +224,47 @@ namespace LAB2
                     if (res1 > res2)
                     {
                         ++rankAlts[currentAlternative1];
+                        Console.WriteLine("First win.");
+                        Console.WriteLine($"Alt {i}: {currentAlternative1}");
+                        Console.WriteLine($"Amount points: {rankAlts[currentAlternative1]}\n");
+                    }
+                    else if (res1 < res2)
+                    {
+                        ++rankAlts[currentAlternative2];
+                        Console.WriteLine("Second win.");
+                        Console.WriteLine($"Alt {j}: {currentAlternative2}");
+                        Console.WriteLine($"Amount points: {rankAlts[currentAlternative2]}\n");
                     }
                     else
                     {
-                        ++rankAlts[currentAlternative2];
+                        Console.WriteLine("Can not compare alternatives.\n");
                     }
                 }
             }
 
-            return rankAlts.FirstOrDefault(r => r.Value == rankAlts.Max(alt => alt.Value)).Key;
+            var alts = rankAlts.Where(r => r.Value == rankAlts.Max(alt => alt.Value)).ToList();
+            if (alts.Count > 1)
+            {
+                Console.WriteLine("There are several alts with max wins. We need compare their by extra method");
+                alts.ForEach(a =>
+                    Console.WriteLine(
+                        $"Alt {_alternativesForCompare.FindIndex(al => al == a.Key)} points {a.Value}: {a.Key}"));
+            }
+            else
+            {
+                var alt = alts.FirstOrDefault();
+                Console.WriteLine(
+                    $"The best alternative {_alternativesForCompare.FindIndex(al => al == alt.Key)} points {alt.Value}: {alt.Key}");
+            }
+
+            return alts.Select(alt => alt.Key);
+        }
+
+        private int GetFavorite(List<int> limitationsRanges1, List<int> limitationsRanges2)
+        {
+            var count1 = limitationsRanges1.Count(value => value != 0);
+            var count2 = limitationsRanges2.Count(value => value != 0);
+            return count1 > count2 ? 2 : count1 == count2 ? new Random().Next(1, 3) : 1;
         }
 
         private Alternative PrintCompareAlternatives(Alternative alt1, Alternative alt2, List<int> markIndexes1,
@@ -193,16 +304,35 @@ namespace LAB2
 
             Console.WriteLine("}");
 
-            Console.Write("What better 1 or 2: ");
-            var result = Console.ReadLine();
-            Console.WriteLine();
-            if (int.TryParse(result, out var intResult))
+            if (_answers != null && _answers.Any())
             {
-                return intResult == 1 ? alt1 : alt2;
+                var answer = _answers.FirstOrDefault();
+                if (answer != 0)
+                {
+                    Console.WriteLine($"What better 1 or 2: {answer}\n");
+                    _answers.RemoveAt(0);
+                    return answer == 1 ? alt1 : alt2;
+                }
+
+                throw new Exception("No answers");
             }
             else
             {
-                throw new ArgumentException();
+                var value = new Random().Next(1, 3);
+                Console.WriteLine($"What better 1 or 2: {value}\n");
+                return value == 1 ? alt1 : alt2;
+
+                // Console.Write("What better 1 or 2: ");
+                // var result = Console.ReadLine();
+                // Console.WriteLine();
+                // if (int.TryParse(result, out var intResult))
+                // {
+                //     return intResult == 1 ? alt1 : alt2;
+                // }
+                // else
+                // {
+                //     throw new ArgumentException();
+                // }
             }
         }
 
@@ -246,12 +376,12 @@ namespace LAB2
             MarkRange(currentAlternative2, highlight, limitationsRanges2);
         }
 
-        private void MarkRange(Alternative currentAlternative1, List<Pair<Criterion, CriterionValue>> highlight,
-            List<int> limitationsRanges1)
+        private void MarkRange(Alternative currentAlternative, List<Pair<Criterion, CriterionValue>> highlight,
+            List<int> limitationsRanges)
         {
             Console.WriteLine("Rank highlight's limitations:");
             Console.Write("{ ");
-            currentAlternative1.AlternativeValues.ForEach(value =>
+            currentAlternative.AlternativeValues.ForEach(value =>
             {
                 if (highlight.Contains(value))
                 {
@@ -268,21 +398,36 @@ namespace LAB2
             });
             Console.Write("}\n");
             Console.Write("Your range: ");
-            var answer = Console.ReadLine();
-            var ranks = answer.Split(' ');
-            for (var i = 0; i < ranks.Length; i++)
+            // var answer = Console.ReadLine();
+            // var ranks = answer.Split(' ');
+            // for (var i = 0; i < ranks.Length; i++)
+            // {
+            //     var rank = ranks[i];
+            //     if (int.TryParse(rank, out var r))
+            //     {
+            //         var index = currentAlternative1.AlternativeValues.IndexOf(highlight[i]);
+            //         limitationsRanges1[index] = r;
+            //     }
+            //     else
+            //     {
+            //         throw new ArgumentException();
+            //     }
+            // }
+            for (var i = 0; i < highlight.Count; i++)
             {
-                var rank = ranks[i];
-                if (int.TryParse(rank, out var r))
+                var index = currentAlternative.AlternativeValues.IndexOf(highlight[i]);
+                int value;
+                while (true)
                 {
-                    var index = currentAlternative1.AlternativeValues.IndexOf(highlight[i]);
-                    limitationsRanges1[index] = r;
+                    value = new Random().Next(1, highlight.Count + 1);
+                    if (!limitationsRanges.Contains(value)) break;
                 }
-                else
-                {
-                    throw new ArgumentException();
-                }
+
+                limitationsRanges[index] = value;
             }
+
+            Console.WriteLine(limitationsRanges.Where(val => val != 0).Select(val => val.ToString())
+                .Aggregate((p, n) => p + " " + n) + "\n");
         }
 
         private Alternative GetBaseAlternative(Alternative currentAlternative1, List<int> limitationsRanges1,
